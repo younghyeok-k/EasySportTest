@@ -1,4 +1,4 @@
-package com.example.test
+package com.example.test.adapter
 
 import android.content.Context
 import android.util.TypedValue
@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.test.R
+import com.example.test.model.SportModel
 
 class SportListAdapter : ListAdapter<SportModel, SportListAdapter.ItemViewHolder>(differ) {
 

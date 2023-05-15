@@ -1,4 +1,4 @@
-package com.example.test
+package com.example.test.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.test.R
+import com.example.test.model.SportModel
 
 class SportViewPagerAdapter(val itemClicked: (SportModel) -> Unit) :
     ListAdapter<SportModel, SportViewPagerAdapter.ItemViewHolder>(differ) {

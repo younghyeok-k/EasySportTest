@@ -3,23 +3,24 @@ package com.example.test
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
-import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.UiThread
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.Transformations.map
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.gms.location.*
+import com.example.test.adapter.CustomAdapter
+import com.example.test.adapter.SportListAdapter
+import com.example.test.adapter.SportViewPagerAdapter
+import com.example.test.api.SportService
+import com.example.test.dto.SportDto
+import com.example.test.model.SportModel
+import com.example.test.model.loginPost
+import com.example.test.viewmodel.MainViewModel
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
@@ -102,7 +103,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
             }
         })
 
-
+//        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+//        val rv = findViewById<RecyclerView>(R.id.rv)
+//        viewModel.liveloginList.observe(this, {
+//
+//            viewModel.getall()
+//            viewModel.liveallList.observe(this, Observer{
+//                val customAdapter =
+//                    CustomAdapter(it as ArrayList<loginPost> /* = java.util.ArrayList<com.example.retrofitactivity.model.Post> */)
+//                CustomAdapter(it as ArrayList<Data> /* = java.util.ArrayList<com.example.retrofitactivity.model.Post> */)
+//                rv.adapter = customAdapter
+//                rv.layoutManager = LinearLayoutManager(this)
+//
+//            })
     }
 
     override fun onMapReady(map: NaverMap) {

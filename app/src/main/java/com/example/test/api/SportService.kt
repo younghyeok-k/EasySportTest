@@ -1,6 +1,7 @@
-package com.example.test
+package com.example.test.api
 
 
+import com.example.test.dto.SportDto
 import retrofit2.Call
 import retrofit2.http.GET
 
