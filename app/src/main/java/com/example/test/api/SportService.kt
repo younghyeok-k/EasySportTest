@@ -8,7 +8,7 @@ import retrofit2.http.GET
 
 interface SportService  {
 
-
-    @GET("/v3/7bde037d-9563-40bf-9ecd-de3191e71ba8")
+// 마커 크기좀 줄이고 맵자체 크기를 확대시키기
+    @GET("/v3/0acf76a7-0ec0-4d5b-a537-2b9961f427a5")
     fun getSportList(): Call<SportDto>
 }

@@ -180,6 +180,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
     private fun updateMarker(Sports: List<SportModel>) {
         Sports.forEach { Sports ->
             val marker = Marker()
+ 
             marker.position = LatLng(Sports.lat, Sports.lng)
             marker.onClickListener = this
 
