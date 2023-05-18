@@ -99,6 +99,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
                     CameraUpdate.scrollTo(LatLng(selectedHouseModel.lat, selectedHouseModel.lng))
                         .animate(CameraAnimation.Easing)
 
+
                 naverMap.moveCamera(cameraUpdate)
             }
         })
@@ -127,11 +128,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
         naverMap.minZoom = 10.0
 
 
+        naverMap.cameraPosition= CameraPosition(
+            LatLng(35.180277, 128.091565), // 대상 지점
+            16.0, // 줌 레벨
+        )
+
         val cameraUpdate = CameraUpdate.scrollTo(LatLng(35.180277, 128.091565))
         naverMap.moveCamera(cameraUpdate)
 
         val uiSetting = naverMap.uiSettings
         uiSetting.isLocationButtonEnabled = false
+
         currentLocationButton.map = naverMap
 
         locationSource = FusedLocationSource(this@MainActivity, LOCATION_PERMISSION_REQUEST_CODE)
@@ -188,6 +195,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
             marker.tag = Sports.id
             marker.icon = MarkerIcons.BLACK
             marker.iconTintColor = Color.GREEN
+            marker.width = 50
+            marker.height = 80
         }
     }
 
