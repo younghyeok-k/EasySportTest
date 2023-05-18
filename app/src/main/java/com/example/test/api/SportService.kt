@@ -9,6 +9,6 @@ import retrofit2.http.GET
 interface SportService  {
 
 
-    @GET("/v3/fc96c71d-d6b4-442f-b923-270f6562befd")
+    @GET("/v3/7bde037d-9563-40bf-9ecd-de3191e71ba8")
     fun getSportList(): Call<SportDto>
 }

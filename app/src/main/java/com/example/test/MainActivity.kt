@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
                             viewPagerAdapter.submitList(dto.items)
                             recyclerAdapter.submitList(dto.items) // 새 리스트로 갱신
                             Log.d("retrofit", "통신 성공")
-                            bottomSheetTitleTextView.text = "${dto.items.size}개의 숙소"
+                            bottomSheetTitleTextView.text = "${dto.items.size}개의 시설"
                         }
                     }
 
