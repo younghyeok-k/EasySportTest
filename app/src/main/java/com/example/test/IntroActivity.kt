@@ -36,13 +36,15 @@ class IntroActivity : AppCompatActivity() {
             viewModel.getJoin(user)
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
-            Log.d("회원가입",viewModel.livejoinList.value!!.toString())
+            Log.d("회원가입",viewModel.livejoinList.value.toString())
 
         }
         viewModel.liveloginList.observe(this, Observer {
             Log.d("로그인성공", it.execute().body()!!.msg)
             sharedManager.saveCurrentUser(it.execute().body()!!.data)
             Toast.makeText(this,it.execute().body()!!.msg,Toast.LENGTH_SHORT)
+
+            Log.d("로그인성공", sharedManager.getCurrentUser().email.toString())
         })
     }
 }

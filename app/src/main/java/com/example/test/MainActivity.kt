@@ -7,8 +7,12 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +25,8 @@ import com.example.test.dto.SportDto
 import com.example.test.model.SportModel
 import com.example.test.model.loginPost
 import com.example.test.viewmodel.MainViewModel
+import com.google.android.material.internal.NavigationMenu
+import com.google.android.material.navigation.NavigationView
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
@@ -34,7 +40,8 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickListener {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickListener,
+    NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -46,19 +53,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
     private val viewPager: ViewPager2 by lazy {
         findViewById(R.id.houseViewPager)
     }
-
     private val mapView: MapView by lazy {
         findViewById(R.id.mapView)
     }
-
     private val recyclerView: RecyclerView by lazy {
         findViewById(R.id.recyclerView)
     }
-
     private val currentLocationButton: LocationButtonView by lazy {
         findViewById(R.id.currentLocationButton)
     }
-
     private val bottomSheetTitleTextView: TextView by lazy {
         findViewById(R.id.bottomSheetTitleTextView)
     }
@@ -103,6 +106,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
                 naverMap.moveCamera(cameraUpdate)
             }
         })
+        val drawer_navi = findViewById<DrawerLayout>(R.id.layout_drawer)
+        val menu_navi = findViewById<ImageView>(R.id.menu_navi)
+        val naviview = findViewById<NavigationView>(R.id.naviview)
+        val nav_header_view = naviview.getHeaderView(0)
+        val close = nav_header_view.findViewById<ImageView>(R.id.close)
+        naviview.setNavigationItemSelectedListener(this)
+        menu_navi.setOnClickListener {
+            drawer_navi.openDrawer(GravityCompat.START)
+        }
+        close.setOnClickListener {
+            onBackPressed()
+        }
 
 //        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 //        val rv = findViewById<RecyclerView>(R.id.rv)
@@ -116,7 +131,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
 //                rv.adapter = customAdapter
 //                rv.layoutManager = LinearLayoutManager(this)
 //
-//            })
+//            }
     }
 
     override fun onMapReady(map: NaverMap) {
@@ -128,7 +143,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
         naverMap.minZoom = 10.0
 
 
-        naverMap.cameraPosition= CameraPosition(
+        naverMap.cameraPosition = CameraPosition(
             LatLng(35.180277, 128.091565), // 대상 지점
             16.0, // 줌 레벨
         )
@@ -137,7 +152,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
         naverMap.moveCamera(cameraUpdate)
 
         val uiSetting = naverMap.uiSettings
+//        val lv = findViewById<LocationButtonView>(R.id.location)
         uiSetting.isLocationButtonEnabled = false
+
 
         currentLocationButton.map = naverMap
 
@@ -187,7 +204,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
     private fun updateMarker(Sports: List<SportModel>) {
         Sports.forEach { Sports ->
             val marker = Marker()
- 
+
             marker.position = LatLng(Sports.lat, Sports.lng)
             marker.onClickListener = this
 
@@ -262,6 +279,28 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
             viewPager.currentItem = position
         }
         return true
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+
+
+        when (item.itemId) {
+
+
+        }
+        val drawer_navi = findViewById<DrawerLayout>(R.id.layout_drawer)
+        drawer_navi.closeDrawers()
+        return false
+    }
+
+    override fun onBackPressed() {
+        val drawer_navi = findViewById<DrawerLayout>(R.id.layout_drawer)
+        if (drawer_navi.isDrawerOpen(GravityCompat.START)) {
+            drawer_navi.closeDrawers()
+        } else {
+            super.onBackPressed() //일반 백버튼 기능 실행
+        }
+
     }
 
 }
