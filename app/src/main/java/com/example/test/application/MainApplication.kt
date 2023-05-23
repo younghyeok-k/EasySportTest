@@ -11,6 +11,6 @@ class MainApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        prefs = PreferenceUtil(applicationContext)
+//        prefs = PreferenceUtil(applicationContext)
     }
 }
