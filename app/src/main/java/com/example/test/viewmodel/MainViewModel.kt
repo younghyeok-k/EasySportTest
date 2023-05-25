@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 
 import com.example.test.api.AllApi
 import com.example.test.api.JoinApi
-import com.example.test.api.LoginApi
 import com.example.test.api.RetrofitInstance
 import com.example.test.application.SharedManager
 import com.example.test.model.Data
@@ -22,24 +21,24 @@ import retrofit2.Response
 class MainViewModel : ViewModel() {
 
 
-    private val retrofitInstance = RetrofitInstance.getInstance().create(LoginApi::class.java)
-    private var _loginList = MutableLiveData<Call<loginPost>>()
-    val liveloginList: LiveData<Call<loginPost>>
-        get() = _loginList
-
-    fun getLogin(user: User) = viewModelScope.launch {
-        val post1 = retrofitInstance.getLogin(user)
-
-//sharedper 값 넘겨줘야함
-        _loginList.value = post1
-    }
+//    private val retrofitInstance = RetrofitInstance.getInstance().create(LoginApi::class.java)
+//    private var _loginList = MutableLiveData<Call<loginPost>>()
+//    val liveloginList: LiveData<Call<loginPost>>
+//        get() = _loginList
+//
+//    fun getLogin(user: User) = viewModelScope.launch {
+//        val post1 = retrofitInstance.getLogin(user)
+//
+////sharedper 값 넘겨줘야함
+//        _loginList.value = post1
+//    }
 
 
     // 회원가입
     private val retrofitInstance2 = RetrofitInstance.getInstance().create(JoinApi::class.java)
 
-    private var _joinList = MutableLiveData<Response<joinPost>>()
-    val livejoinList: LiveData<Response<joinPost>>
+    private var _joinList = MutableLiveData<Call<joinPost>>()
+    val livejoinList: LiveData<Call<joinPost>>
         get() = _joinList
 
     fun getJoin(user: User) = viewModelScope.launch {

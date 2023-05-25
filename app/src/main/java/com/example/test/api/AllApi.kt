@@ -7,5 +7,5 @@ import retrofit2.http.GET
 interface AllApi {
 
     @GET( "user/all")
-    suspend fun getall(): List<Data>
+     fun getall(): List<Data>
 }

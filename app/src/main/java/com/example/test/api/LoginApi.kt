@@ -11,7 +11,7 @@ interface LoginApi {
 
 
     @POST( "login")
-    suspend fun getLogin(
+   fun getLogin(
         @Body user: User,
 //   @Header("authorization") accessToken:String
         ): Call<loginPost>

@@ -104,6 +104,7 @@
                 app:layout_constraintVertical_bias="0.562" />
 
             <TextView
+                android:fontFamily="@font/tes"
                 android:id="@+id/logout"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"

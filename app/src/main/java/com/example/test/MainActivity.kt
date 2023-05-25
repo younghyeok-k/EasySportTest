@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -21,6 +22,7 @@ import com.example.test.adapter.CustomAdapter
 import com.example.test.adapter.SportListAdapter
 import com.example.test.adapter.SportViewPagerAdapter
 import com.example.test.api.SportService
+import com.example.test.application.SharedManager
 import com.example.test.dto.SportDto
 import com.example.test.model.SportModel
 import com.example.test.model.loginPost
@@ -47,6 +49,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
 
+    private val sharedManager: SharedManager by lazy { SharedManager(this) }
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
 
@@ -111,12 +114,25 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
         val naviview = findViewById<NavigationView>(R.id.naviview)
         val nav_header_view = naviview.getHeaderView(0)
         val close = nav_header_view.findViewById<ImageView>(R.id.close)
+        val username = nav_header_view.findViewById<TextView>(R.id.username_header)
+        val logout = findViewById<TextView>(R.id.logout)
+
+        username.refreshDrawableState()
+
         naviview.setNavigationItemSelectedListener(this)
         menu_navi.setOnClickListener {
             drawer_navi.openDrawer(GravityCompat.START)
+
         }
+
         close.setOnClickListener {
             onBackPressed()
+        }
+
+        logout.setOnClickListener {
+            sharedManager.clear()
+            val intent = Intent(this, SplashActivity::class.java)
+            startActivity(intent)
         }
 
 //        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
