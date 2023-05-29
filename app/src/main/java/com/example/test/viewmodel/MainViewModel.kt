@@ -4,15 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.test.api.*
 
-import com.example.test.api.AllApi
-import com.example.test.api.JoinApi
-import com.example.test.api.RetrofitInstance
 import com.example.test.application.SharedManager
-import com.example.test.model.Data
-import com.example.test.model.User
-import com.example.test.model.joinPost
-import com.example.test.model.loginPost
+import com.example.test.model.*
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Response
@@ -21,17 +16,17 @@ import retrofit2.Response
 class MainViewModel : ViewModel() {
 
 
-//    private val retrofitInstance = RetrofitInstance.getInstance().create(LoginApi::class.java)
-//    private var _loginList = MutableLiveData<Call<loginPost>>()
-//    val liveloginList: LiveData<Call<loginPost>>
-//        get() = _loginList
-//
-//    fun getLogin(user: User) = viewModelScope.launch {
-//        val post1 = retrofitInstance.getLogin(user)
-//
-////sharedper 값 넘겨줘야함
-//        _loginList.value = post1
-//    }
+    private val retrofitInstance = RetrofitInstance.getInstance().create(LoginApi::class.java)
+    private var _loginList = MutableLiveData<Call<loginPost>>()
+    val liveloginList: LiveData<Call<loginPost>>
+        get() = _loginList
+
+    fun getLogin(user: User) = viewModelScope.launch {
+        val post1 = retrofitInstance.getLogin(user)
+
+//sharedper 값 넘겨줘야함
+        _loginList.value = post1
+    }
 
 
     // 회원가입
@@ -58,6 +53,18 @@ class MainViewModel : ViewModel() {
         val post1 = retrofitInstance3.getall()
 
         _allList.value = post1
+    }
+
+    private val retrofitInstance4 = RetrofitInstance.getInstance().create(Center::class.java)
+
+    private var _centerallList = MutableLiveData<List<SportModel2>>()
+    val livecallList: LiveData<List<SportModel2>>
+        get() = _centerallList
+
+    fun getcenterall() = viewModelScope.launch {
+        val post1 = retrofitInstance4.getall()
+
+        _centerallList.value = post1
     }
 
 

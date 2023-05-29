@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.test.api.AllApi
 import com.example.test.api.LoginApi
@@ -41,7 +42,7 @@ class IntroActivity : AppCompatActivity() {
             val user = User()
             user.username = "asd2"
             user.password = "asd2"
-//            viewModel.getLogin(user)
+            viewModel.getLogin(user)
 //
 //
 //
@@ -51,26 +52,24 @@ class IntroActivity : AppCompatActivity() {
 //            Log.d("회원가입",viewModel.livejoinList.value.toString())
             getLoginAPI(user)
         }
-//        viewModel.liveloginList.observe(this, Observer {
+        viewModel.liveloginList.observe(this, Observer {
 //            Log.d("로그인성공", it.execute().body()!!.msg)
-//            sharedManager.saveCurrentUser(it.execute().body()!!.data)
 //            Toast.makeText(this,it.execute().body()!!.msg,Toast.LENGTH_SHORT)
-//
-//            Log.d("로그인성공", sharedManager.getCurrentUser().email.toString())
-//        })
+
+        })
     }
 
 //    private fun getSportListFromAPI(user: User) {
 //        val retrofit = Retrofit.Builder()
 ////        http://192.168.48.1:8080/
-//            .baseUrl("https://run.mocky.io")
+//            .baseUrl(" http://192.168.48.1:8080/")
 //            .addConverterFactory(ScalarsConverterFactory.create())
 //            .addConverterFactory(GsonConverterFactory.create())
 //            .build()
 //
-//        retrofit.create(LoginApi::class.java).also {
-//            it.getLogin(user)
-//                .enqueue(object : Callback<loginPost> {
+//        retrofit.create(AllApi::class.java).also {
+//            it.getall()
+//                .enqueue(object : Callback<> {
 //                    @SuppressLint("SetTextI18n")
 //                    override fun onResponse(call: Call<loginPost>, response: Response<loginPost>) {
 //

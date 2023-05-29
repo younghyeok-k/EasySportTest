@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,11 +22,12 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.test.adapter.CustomAdapter
 import com.example.test.adapter.SportListAdapter
 import com.example.test.adapter.SportViewPagerAdapter
+import com.example.test.api.Center
+import com.example.test.api.Mlogin
 import com.example.test.api.SportService
 import com.example.test.application.SharedManager
 import com.example.test.dto.SportDto
-import com.example.test.model.SportModel
-import com.example.test.model.loginPost
+import com.example.test.model.*
 import com.example.test.viewmodel.MainViewModel
 import com.google.android.material.internal.NavigationMenu
 import com.google.android.material.navigation.NavigationView
@@ -135,19 +137,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
             startActivity(intent)
         }
 
-//        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 //        val rv = findViewById<RecyclerView>(R.id.rv)
-//        viewModel.liveloginList.observe(this, {
-//
-//            viewModel.getall()
-//            viewModel.liveallList.observe(this, Observer{
+
+
+            viewModel.getall()
+            viewModel.liveallList.observe(this, Observer{
 //                val customAdapter =
 //                    CustomAdapter(it as ArrayList<loginPost> /* = java.util.ArrayList<com.example.retrofitactivity.model.Post> */)
 //                CustomAdapter(it as ArrayList<Data> /* = java.util.ArrayList<com.example.retrofitactivity.model.Post> */)
 //                rv.adapter = customAdapter
 //                rv.layoutManager = LinearLayoutManager(this)
-//
-//            }
+                Log.d("겟올",it.toString())
+
+            })
     }
 
     override fun onMapReady(map: NaverMap) {
