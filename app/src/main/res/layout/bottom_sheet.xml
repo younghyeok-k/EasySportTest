@@ -23,7 +23,7 @@
         android:layout_height="100dp"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="Sport Center"
+        android:text="Sport  Center"
         android:textColor="@color/black"
         android:textSize="15sp"
         android:textStyle="bold"

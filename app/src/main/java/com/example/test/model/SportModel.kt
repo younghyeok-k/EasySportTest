@@ -1,10 +1,11 @@
 package com.example.test.model
 
 data class SportModel(
-    val id: Int,
-    val title: String,
+    val centerid: Int,
+    val name: String,
     val price: String,
+    val address: String,
     val lat: Double,
-    val lng: Double,
+    val lnt: Double,
     val imgUrl: String
 )

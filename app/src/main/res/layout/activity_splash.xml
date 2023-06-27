@@ -4,15 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#CB6868"
+    android:background="#FFFFFF"
     tools:context=".SplashActivity">
 
-    <ImageView
-        android:layout_width="200dp"
+    <TextView
+        android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:src="@drawable/music"
+android:text="EasySport Club"
+        android:fontFamily="@font/tex"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="45dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:textColor="@color/black"
+        android:gravity="center|bottom"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="10dp"
+        android:textSize="10dp"
+        android:text="Copyright (C) 2023 TEAM NO FIGHT CAN WE"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

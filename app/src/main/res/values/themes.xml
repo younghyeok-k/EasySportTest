@@ -25,5 +25,5 @@
             <item name="android:layout_marginTop">10dp</item>
             <item name="android:layout_marginBottom">10dp</item>
         </style>
-
+    <style name="Theme.MaterialExam" parent="Theme.MaterialComponents.Light.DarkActionBar"/>
 </resources>

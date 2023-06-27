@@ -12,7 +12,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
-        android:fontFamily="@font/tes"
+        android:textColor="@color/black"
+        android:fontFamily="@font/tenada"
         android:textSize="20sp"
         android:id="@+id/imageView"
         android:layout_width="200dp"
@@ -33,7 +34,7 @@
         android:id="@+id/menu_navi"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:layout_marginTop="15dp"
         android:src="@drawable/main_menu"
         app:layout_constraintStart_toStartOf="parent"
@@ -60,11 +61,14 @@
         android:orientation="horizontal" />
 
     <com.naver.maps.map.widget.LocationButtonView
+
+        android:layout_marginTop="60dp"
         android:id="@+id/currentLocationButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:layout_margin="12dp" />
+        android:layout_gravity="top|right"
+        android:layout_marginRight="15dp"
+     />
 
     <include layout="@layout/bottom_sheet" />
 
@@ -124,4 +128,5 @@
 
 
     </com.google.android.material.navigation.NavigationView>
+
 </androidx.drawerlayout.widget.DrawerLayout>

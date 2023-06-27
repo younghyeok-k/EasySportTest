@@ -23,7 +23,7 @@ class SportViewPagerAdapter(val itemClicked: (SportModel) -> Unit) :
             val priceTextView = view.findViewById<TextView>(R.id.priceTextView)
             val thumbnailImageView = view.findViewById<ImageView>(R.id.thumbnailImageView)
 
-            titleTextView.text = sportModel.title
+            titleTextView.text = sportModel.name
             priceTextView.text = sportModel.price
 
             view.setOnClickListener {
@@ -49,7 +49,7 @@ class SportViewPagerAdapter(val itemClicked: (SportModel) -> Unit) :
     companion object {
         val differ = object : DiffUtil.ItemCallback<SportModel>() {
             override fun areItemsTheSame(oldItem: SportModel, newItem: SportModel): Boolean {
-                return oldItem.id == newItem.id
+                return oldItem.name == newItem.name
             }
 
             override fun areContentsTheSame(oldItem: SportModel, newItem: SportModel): Boolean {

@@ -2,13 +2,14 @@ package com.example.test
 
 
 import android.annotation.SuppressLint
+import android.app.LauncherActivity
 import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.widget.Button
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -19,17 +20,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.example.test.adapter.CustomAdapter
+import com.example.test.adapter.OnItemClickListener
 import com.example.test.adapter.SportListAdapter
 import com.example.test.adapter.SportViewPagerAdapter
-import com.example.test.api.Center
-import com.example.test.api.Mlogin
 import com.example.test.api.SportService
 import com.example.test.application.SharedManager
+import com.example.test.dialog.CustomDialog
+
 import com.example.test.dto.SportDto
 import com.example.test.model.*
 import com.example.test.viewmodel.MainViewModel
-import com.google.android.material.internal.NavigationMenu
 import com.google.android.material.navigation.NavigationView
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
@@ -45,7 +45,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickListener,
-    NavigationView.OnNavigationItemSelectedListener {
+    NavigationView.OnNavigationItemSelectedListener, OnItemClickListener {
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -77,14 +77,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
                 action = Intent.ACTION_SEND
                 putExtra(
                     Intent.EXTRA_TEXT,
-                    "[지금 이 가격에 예약하세요!!] ${it.title} ${it.price} 사진보기 : ${it.imgUrl}"
+                    "[지금 이 가격에 예약하세요!!] ${it.name} ${it.price} 사진보기 : ${it.imgUrl}"
                 )
                 type = "text/plain"
             }
         startActivity(Intent.createChooser(intent, null))
+
+
     })
 
-    private val recyclerAdapter = SportListAdapter()
+    private val recyclerAdapter = SportListAdapter(itemClicked = {
+      Log.d("test","${it.name} ${it.price}")
+
+        val customDialog = CustomDialog(this)
+        customDialog.showDialog(it)
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,7 +103,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
         viewPager.adapter = viewPagerAdapter
         recyclerView.adapter = recyclerAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
-
+//        recyclerAdapter.setItemClickListener(object: SportListAdapter.OnItemClickListener{
+//            override fun onClick(v: View, position: Int) {
+//// 리사클러뷰 마다 커스텀 다일러그 다르게 따게 예약창 근데
+//                Log.d("클릭이벤트 확인","ㅇㅇ")
+//                //기서 다이얼로그
+//            }
+//        })
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
 
             override fun onPageSelected(position: Int) {
@@ -104,7 +117,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
 
                 val selectedHouseModel = viewPagerAdapter.currentList[position]
                 val cameraUpdate =
-                    CameraUpdate.scrollTo(LatLng(selectedHouseModel.lat, selectedHouseModel.lng))
+                    CameraUpdate.scrollTo(LatLng(selectedHouseModel.lat, selectedHouseModel.lnt))
                         .animate(CameraAnimation.Easing)
 
 
@@ -141,17 +154,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
 //        val rv = findViewById<RecyclerView>(R.id.rv)
 
 
-            viewModel.getall()
-            viewModel.liveallList.observe(this, Observer{
-//                val customAdapter =
-//                    CustomAdapter(it as ArrayList<loginPost> /* = java.util.ArrayList<com.example.retrofitactivity.model.Post> */)
-//                CustomAdapter(it as ArrayList<Data> /* = java.util.ArrayList<com.example.retrofitactivity.model.Post> */)
-//                rv.adapter = customAdapter
-//                rv.layoutManager = LinearLayoutManager(this)
-                Log.d("겟올",it.toString())
-
-            })
+//            viewModel.getall()
+//            viewModel.liveallList.observe(this, Observer{
+////                val customAdapter =
+////                    CustomAdapter(it as ArrayList<loginPost> /* = java.util.ArrayList<com.example.retrofitactivity.model.Post> */)
+////                CustomAdapter(it as ArrayList<Data> /* = java.util.ArrayList<com.example.retrofitactivity.model.Post> */)
+////                rv.adapter = customAdapter
+////                rv.layoutManager = LinearLayoutManager(this)
+//                Log.d("겟올",it.toString())
+//
+//            })
     }
+
+
 
     override fun onMapReady(map: NaverMap) {
 
@@ -224,11 +239,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
         Sports.forEach { Sports ->
             val marker = Marker()
 
-            marker.position = LatLng(Sports.lat, Sports.lng)
+            marker.position = LatLng(Sports.lat, Sports.lnt)
             marker.onClickListener = this
 
             marker.map = naverMap
-            marker.tag = Sports.id
+            marker.tag = Sports.centerid
             marker.icon = MarkerIcons.BLACK
             marker.iconTintColor = Color.GREEN
             marker.width = 50
@@ -291,7 +306,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
 
     override fun onClick(overly: Overlay): Boolean {
         val selectedModel = viewPagerAdapter.currentList.firstOrNull {
-            it.id == overly.tag
+            it.centerid == overly.tag
         }
         selectedModel?.let {
             val position = viewPagerAdapter.currentList.indexOf(it)
@@ -320,6 +335,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
             super.onBackPressed() //일반 백버튼 기능 실행
         }
 
+    }
+
+    override fun onItemClick(sportModel: SportModel) {
+        Toast.makeText(this, "클릭된 아이템: ${sportModel.name}", Toast.LENGTH_SHORT).show()
     }
 
 }
