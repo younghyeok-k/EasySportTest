@@ -2,34 +2,33 @@ package com.example.test
 
 
 import android.annotation.SuppressLint
-import android.app.LauncherActivity
 import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.example.example.CenterResponse
 import com.example.test.adapter.OnItemClickListener
 import com.example.test.adapter.SportListAdapter
 import com.example.test.adapter.SportViewPagerAdapter
+import com.example.test.api.AllApi
+import com.example.test.api.Center
+import com.example.test.api.RetrofitInstance
 import com.example.test.api.SportService
 import com.example.test.application.SharedManager
 import com.example.test.dialog.CustomDialog
 
 import com.example.test.dto.SportDto
 import com.example.test.model.*
-import com.example.test.viewmodel.MainViewModel
 import com.google.android.material.navigation.NavigationView
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
@@ -46,6 +45,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickListener,
     NavigationView.OnNavigationItemSelectedListener, OnItemClickListener {
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("http://192.168.48.1:8080/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val apiService by lazy {
+        RetrofitInstance.retrofit.create(AllApi::class.java)
+    }
+//all api 통신 174번째줄 통신
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -87,7 +95,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
     })
 
     private val recyclerAdapter = SportListAdapter(itemClicked = {
-      Log.d("test","${it.name} ${it.price}")
+        Log.d("test", "${it.name} ${it.price}")
 
         val customDialog = CustomDialog(this)
         customDialog.showDialog(it)
@@ -148,9 +156,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
             sharedManager.clear()
             val intent = Intent(this, SplashActivity::class.java)
             startActivity(intent)
+
         }
 
-        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+
+//        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 //        val rv = findViewById<RecyclerView>(R.id.rv)
 
 
@@ -164,8 +174,46 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
 //                Log.d("겟올",it.toString())
 //
 //            })
-    }
 
+
+        val call = apiService.getall()
+        call.enqueue(object : Callback<List<Data>> {
+            override fun onResponse(call: Call<List<Data>>, response: Response<List<Data>>) {
+                if (response.isSuccessful) {
+                    val dataList = response.body()
+                    Log.d("통신하기", "${dataList?.get(1)?.id}")
+                    // 데이터 처리
+                } else {
+                    // API 호출 실패 처리
+                }
+            }
+// 그 혹시
+            override fun onFailure(call: Call<List<Data>>, t: Throwable) {
+                t.printStackTrace();
+                Log.d("통신실패", "실패")
+            }
+        })
+
+
+        RetrofitInstance.retrofit.create(Center::class.java)
+            .getall()
+            .enqueue(object : Callback<CenterResponse> {
+                override fun onResponse(
+                    call: Call<CenterResponse>,
+                    response: Response<CenterResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        Log.d("MainActivity", "success");
+                    }
+                }
+
+                override fun onFailure(call: Call<CenterResponse>, t: Throwable) {
+                    t.printStackTrace()
+                }
+            })
+
+    }
 
 
     override fun onMapReady(map: NaverMap) {

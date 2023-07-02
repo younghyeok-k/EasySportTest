@@ -8,6 +8,6 @@ data class Data(
     var password: String?=null,
     var email: String?=null,
     var role: String?=null, //?
-    var updateAt: LocalDateTime?=null,
-    var createdAt: LocalDateTime?=null
+    var updateAt: String?=null,
+    var createdAt: String?=null
 )

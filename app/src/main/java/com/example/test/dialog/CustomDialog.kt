@@ -34,6 +34,7 @@ class CustomDialog(private val context: Context) {
         val img = dialog.findViewById<ImageView>(R.id.img1)
         val datee = dialog.findViewById<TextView>(R.id.date)
 //        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        val back = dialog.findViewById<ImageView>(R.id.backi)
 
         // 오늘 날짜
         val today = MaterialDatePicker.todayInUtcMilliseconds()
@@ -59,6 +60,10 @@ val datepicker=dialog.findViewById<Button>(R.id.date_picker_btn)
 
                     datee.text = dateString
                 }
+            }
+
+            back.setOnClickListener{
+               dialog.dismiss()
             }
         }
 

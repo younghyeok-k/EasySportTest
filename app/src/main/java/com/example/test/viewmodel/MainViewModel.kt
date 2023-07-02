@@ -6,11 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.test.api.*
 
-import com.example.test.application.SharedManager
 import com.example.test.model.*
 import kotlinx.coroutines.launch
 import retrofit2.Call
-import retrofit2.Response
 
 
 class MainViewModel : ViewModel() {
@@ -45,8 +43,8 @@ class MainViewModel : ViewModel() {
     //userall
     private val retrofitInstance3 = RetrofitInstance.getInstance().create(AllApi::class.java)
 
-    private var _allList = MutableLiveData<List<Data>>()
-    val liveallList: LiveData<List<Data>>
+    private var _allList = MutableLiveData<Call<List<Data>>>()
+    val liveallList: LiveData<Call<List<Data>>>
         get() = _allList
 
     fun getall() = viewModelScope.launch {
@@ -64,7 +62,7 @@ class MainViewModel : ViewModel() {
     fun getcenterall() = viewModelScope.launch {
         val post1 = retrofitInstance4.getall()
 
-        _centerallList.value = post1
+        //_centerallList.value = post1
     }
 
 
