@@ -1,34 +1,34 @@
 package com.example.test
 
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.example.CenterResponse
-import com.example.test.adapter.OnItemClickListener
+import com.example.example.Content
 import com.example.test.adapter.SportListAdapter
 import com.example.test.adapter.SportViewPagerAdapter
 import com.example.test.api.AllApi
 import com.example.test.api.Center
+import com.example.test.api.ReservationApi
 import com.example.test.api.RetrofitInstance
-import com.example.test.api.SportService
 import com.example.test.application.SharedManager
 import com.example.test.dialog.CustomDialog
 
-import com.example.test.dto.SportDto
 import com.example.test.model.*
+import com.example.test.model.Reservation.RequsetReservation
+import com.example.test.model.Reservation.ResponseReservation
 import com.google.android.material.navigation.NavigationView
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
@@ -40,15 +40,9 @@ import com.naver.maps.map.widget.LocationButtonView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickListener,
-    NavigationView.OnNavigationItemSelectedListener, OnItemClickListener {
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.48.1:8080/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    NavigationView.OnNavigationItemSelectedListener {
 
     private val apiService by lazy {
         RetrofitInstance.retrofit.create(AllApi::class.java)
@@ -59,7 +53,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
 
-    private val sharedManager: SharedManager by lazy { SharedManager(this) }
+    private lateinit var sharedManager: SharedManager
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
 
@@ -104,6 +98,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        SharedManager.init(this)
+        sharedManager = SharedManager.getInstance()
+
         mapView.onCreate(savedInstanceState)
 
         mapView.getMapAsync(this)
@@ -125,11 +123,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
 
                 val selectedHouseModel = viewPagerAdapter.currentList[position]
                 val cameraUpdate =
-                    CameraUpdate.scrollTo(LatLng(selectedHouseModel.lat, selectedHouseModel.lnt))
-                        .animate(CameraAnimation.Easing)
+                    selectedHouseModel.lat?.let { selectedHouseModel.lnt?.let { it1 ->
+                        LatLng(it,
+                            it1
+                        )
+                    } }?.let {
+                        CameraUpdate.scrollTo(it)
+                            .animate(CameraAnimation.Easing)
+                    }
 
 
-                naverMap.moveCamera(cameraUpdate)
+                if (cameraUpdate != null) {
+                    naverMap.moveCamera(cameraUpdate)
+                }
             }
         })
         val drawer_navi = findViewById<DrawerLayout>(R.id.layout_drawer)
@@ -195,27 +201,46 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
         })
 
 
-        RetrofitInstance.retrofit.create(Center::class.java)
-            .getall()
-            .enqueue(object : Callback<CenterResponse> {
-                override fun onResponse(
-                    call: Call<CenterResponse>,
-                    response: Response<CenterResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        val body = response.body()
-                        Log.d("MainActivity", "success");
-                    }
-                }
-
-                override fun onFailure(call: Call<CenterResponse>, t: Throwable) {
-                    t.printStackTrace()
-                }
-            })
+        val test = findViewById<Button>(R.id.test)
+        test.setOnClickListener {
+            val reservation = RequsetReservation()
+            reservation.reservingDate="2022-05-06"
+            reservation.reservingTimes = mutableListOf<String>().apply {
+                add("09:00")
+                add("10:00")
+            }
+            reservation.headCount="4"
+            getReservationAPI("6",reservation)
+        }
 
     }
 
+    private fun getReservationAPI(centerid:String,user: RequsetReservation) {
 
+        RetrofitInstance.retrofit.create(ReservationApi::class.java)
+            .getReservation(centerid,user)
+            .enqueue(object : Callback<ResponseReservation> {
+                override fun onResponse(
+                    call: Call<ResponseReservation>,
+                    response: Response<ResponseReservation>
+                ) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        Log.d("getReservationAPI", "success");
+                        response.body()?.let { dto ->
+
+                            Log.d("getReservationAPIcenterName", dto.centerName.toString())
+
+                        }
+
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseReservation>, t: Throwable) {
+                    TODO("Not yet implemented")
+                }
+            })
+    }
     override fun onMapReady(map: NaverMap) {
 
 
@@ -244,54 +269,78 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
         naverMap.locationSource = locationSource
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
-
-
-        getSportListFromAPI()
-
-    }
-
-    private fun getSportListFromAPI() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://run.mocky.io")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        retrofit.create(SportService::class.java).also {
-            it.getSportList()
-                .enqueue(object : Callback<SportDto> {
-                    @SuppressLint("SetTextI18n")
-                    override fun onResponse(call: Call<SportDto>, response: Response<SportDto>) {
-                        if (response.isSuccessful.not()) {
-                            // 실패 처리에 대한 구현
-                            return
-                        }
+        RetrofitInstance.retrofit.create(Center::class.java)
+            .getall()
+            .enqueue(object : Callback<CenterResponse> {
+                override fun onResponse(
+                    call: Call<CenterResponse>,
+                    response: Response<CenterResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        Log.d("MainActivity", "success");
                         response.body()?.let { dto ->
-                            updateMarker(dto.items)
-                            viewPagerAdapter.submitList(dto.items)
-                            recyclerAdapter.submitList(dto.items) // 새 리스트로 갱신
+                            updateMarker(dto.content)
+                            viewPagerAdapter.submitList(dto.content)
+                            recyclerAdapter.submitList(dto.content) // 새 리스트로 갱신
                             Log.d("retrofit", "통신 성공")
-                            bottomSheetTitleTextView.text = "${dto.items.size}개의 시설"
+                            bottomSheetTitleTextView.text = "${dto.content.size}개의 시설"
                         }
-                    }
 
-                    override fun onFailure(call: Call<SportDto>, t: Throwable) {
-                        // 실패 처리에 대한 구현
-                        Log.d("retrofit", "통신 실패")
-                        Toast.makeText(this@MainActivity, "실패", Toast.LENGTH_SHORT)
                     }
-                })
-        }
+                }
+
+                override fun onFailure(call: Call<CenterResponse>, t: Throwable) {
+                    t.printStackTrace()
+                }
+            })
+
+//        getSportListFromAPI()
+
     }
 
-    private fun updateMarker(Sports: List<SportModel>) {
+//    private fun getSportListFromAPI() {
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("https://run.mocky.io")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//
+//        retrofit.create(SportService::class.java).also {
+//            it.getSportList()
+//                .enqueue(object : Callback<SportDto> {
+//                    @SuppressLint("SetTextI18n")
+//                    override fun onResponse(call: Call<SportDto>, response: Response<SportDto>) {
+//                        if (response.isSuccessful.not()) {
+//                            // 실패 처리에 대한 구현
+//                            return
+//                        }
+//                        response.body()?.let { dto ->
+//                            updateMarker(dto.items)
+//                            viewPagerAdapter.submitList(dto.items)
+//                            recyclerAdapter.submitList(dto.items) // 새 리스트로 갱신
+//                            Log.d("retrofit", "통신 성공")
+//                            bottomSheetTitleTextView.text = "${dto.items.size}개의 시설"
+//                        }
+//                    }
+//
+//                    override fun onFailure(call: Call<SportDto>, t: Throwable) {
+//                        // 실패 처리에 대한 구현
+//                        Log.d("retrofit", "통신 실패")
+//                        Toast.makeText(this@MainActivity, "실패", Toast.LENGTH_SHORT)
+//                    }
+//                })
+//        }
+//    }
+
+    private fun updateMarker(Sports: List<Content>) {
         Sports.forEach { Sports ->
             val marker = Marker()
 
-            marker.position = LatLng(Sports.lat, Sports.lnt)
+            marker.position = Sports.lnt?.let { Sports.lat?.let { it1 -> LatLng(it1, it) } }!!
             marker.onClickListener = this
 
             marker.map = naverMap
-            marker.tag = Sports.centerid
+            marker.tag = Sports.centerId
             marker.icon = MarkerIcons.BLACK
             marker.iconTintColor = Color.GREEN
             marker.width = 50
@@ -354,7 +403,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
 
     override fun onClick(overly: Overlay): Boolean {
         val selectedModel = viewPagerAdapter.currentList.firstOrNull {
-            it.centerid == overly.tag
+            it.centerId == overly.tag
         }
         selectedModel?.let {
             val position = viewPagerAdapter.currentList.indexOf(it)
@@ -385,8 +434,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
 
     }
 
-    override fun onItemClick(sportModel: SportModel) {
-        Toast.makeText(this, "클릭된 아이템: ${sportModel.name}", Toast.LENGTH_SHORT).show()
-    }
+
+//    override fun onItemClick(sportModel: SportModel) {
+//        Toast.makeText(this, "클릭된 아이템: ${sportModel.name}", Toast.LENGTH_SHORT).show()
+//    }
 
 }

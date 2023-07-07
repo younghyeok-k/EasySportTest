@@ -1,7 +1,8 @@
 package com.example.test.api
 
 import android.util.Log
-import com.example.test.BuildConfig
+import com.example.test.application.SharedManager
+import com.example.test.application.TokenInterceptor
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -13,37 +14,55 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.io.IOException
 import java.util.concurrent.TimeUnit
-
-// 폰이랑 네트워크 연결확인 해봐야함
 object RetrofitInstance {
+    private lateinit var sharedManager: SharedManager
 
-//    val BASE_URL = "http://192.168.48.1:8080/"
-    //스포츠 센터 예약 - 지도 찾고 예약까지
+    private val BASE_URL = "http://192.168.12.249:8080/" // gnu
 
-    val BASE_URL = "http://172.21.3.14:8080/" // ip4 내부 접속 방식
-
-    val interceptor = HttpLoggingInterceptor().apply {
-        setLevel(HttpLoggingInterceptor.Level.BASIC);
+    private val interceptor = HttpLoggingInterceptor().apply {
+        setLevel(HttpLoggingInterceptor.Level.BASIC)
     }
 
-    val okHttpCLient = OkHttpClient.Builder()
+    private val okHttpClient = OkHttpClient.Builder()
         .connectTimeout(2, TimeUnit.MINUTES)
         .readTimeout(2, TimeUnit.MINUTES)
         .writeTimeout(2, TimeUnit.MINUTES)
         .addInterceptor(interceptor)
-        .build();
-
-
-    val retrofit = Retrofit
-        .Builder()
-        .client(okHttpCLient)
-        .baseUrl(BASE_URL)
-        .addConverterFactory(ScalarsConverterFactory.create())
-        .addConverterFactory(GsonConverterFactory.create())
+        .addInterceptor(TokenInterceptor()) // Bearer 토큰 추출 및 요청 헤더에 추가
+        .addInterceptor(BearerTokenInterceptor())
         .build()
 
+    val retrofit: Retrofit by lazy {
+        sharedManager = SharedManager.getInstance() // SharedManager 초기화
+        Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl(BASE_URL)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 
     fun getInstance(): Retrofit {
         return retrofit
+    }
+
+    private class BearerTokenInterceptor : Interceptor {
+        @Throws(IOException::class)
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val originalRequest = chain.request()
+
+            // Bearer 토큰 값 가져오기
+            val bearerToken = sharedManager.getBearerToken()
+
+            // Bearer 토큰이 존재하는 경우 요청 헤더에 추가
+            if (!bearerToken.isNullOrEmpty()) {
+                val modifiedRequest = originalRequest.newBuilder()
+                    .header("Authorization", "Bearer $bearerToken")
+                    .build()
+                return chain.proceed(modifiedRequest)
+            }
+            Log.d("BearerToken", bearerToken)
+            return chain.proceed(originalRequest)
+        }
     }
 }

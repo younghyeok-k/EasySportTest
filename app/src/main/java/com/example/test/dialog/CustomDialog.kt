@@ -3,17 +3,29 @@ package com.example.test.dialog
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.*
 import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
+import com.example.example.Content
+import com.example.example.LoginResponse
 import com.example.test.MainActivity
 import com.example.test.R
+import com.example.test.api.LoginApi
+import com.example.test.api.ReservationApi
+import com.example.test.api.RetrofitInstance
+import com.example.test.model.Reservation.RequsetReservation
+import com.example.test.model.Reservation.ResponseReservation
 import com.example.test.model.SportModel
+import com.example.test.model.User
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -22,7 +34,7 @@ class CustomDialog(private val context: Context) {
 
 
 
-    fun showDialog(houseModel: SportModel) {
+    fun showDialog(houseModel: Content) {
         val dialog = Dialog(context)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
@@ -35,7 +47,7 @@ class CustomDialog(private val context: Context) {
         val datee = dialog.findViewById<TextView>(R.id.date)
 //        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         val back = dialog.findViewById<ImageView>(R.id.backi)
-
+val reservationbtn=dialog.findViewById<Button>(R.id.reservationbtn)
         // 오늘 날짜
         val today = MaterialDatePicker.todayInUtcMilliseconds()
 val datepicker=dialog.findViewById<Button>(R.id.date_picker_btn)
@@ -59,18 +71,34 @@ val datepicker=dialog.findViewById<Button>(R.id.date_picker_btn)
                     val dateString = simpleDateFormat.format(date)
 
                     datee.text = dateString
+
+
+                }
+                back.setOnClickListener {
+                    dialog.dismiss()
                 }
             }
 
             back.setOnClickListener{
                dialog.dismiss()
             }
+            reservationbtn.setOnClickListener {
+                dialog.dismiss()
+                val reservation = RequsetReservation()
+                reservation.reservingDate="2022-05-06"
+                reservation.reservingTimes = mutableListOf<String>().apply {
+                    add("09:00")
+                    add("10:00")
+                }
+                reservation.headCount="4"
+                getReservationAPI("6",reservation)
+            }
         }
 
 
         address.text=houseModel.address
         name.text=houseModel.name
-        price.text=houseModel.price
+        price.text=houseModel.price.toString()
 
         Glide
             .with(img.context)
@@ -79,5 +107,32 @@ val datepicker=dialog.findViewById<Button>(R.id.date_picker_btn)
 
 
         dialog.show()
+    }
+
+        private fun getReservationAPI(centerid:String,user: RequsetReservation) {
+
+        RetrofitInstance.retrofit.create(ReservationApi::class.java)
+            .getReservation(centerid,user)
+            .enqueue(object : Callback<ResponseReservation> {
+                override fun onResponse(
+                    call: Call<ResponseReservation>,
+                    response: Response<ResponseReservation>
+                ) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        Log.d("getReservationAPI", "success");
+                        response.body()?.let { dto ->
+
+                            Log.d("getReservationAPIcenterName", dto.centerName.toString())
+
+                        }
+
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseReservation>, t: Throwable) {
+                    TODO("Not yet implemented")
+                }
+            })
     }
 }

@@ -14,21 +14,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.example.Content
 import com.example.test.R
 import com.example.test.model.SportModel
 
-class SportListAdapter(val itemClicked: (SportModel) -> Unit) :
-    ListAdapter<SportModel, SportListAdapter.ItemViewHolder>(differ) {
+class SportListAdapter(val itemClicked: (Content) -> Unit) :
+    ListAdapter<Content, SportListAdapter.ItemViewHolder>(differ) {
 
     inner class ItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-        fun bind(houseModel: SportModel) {
+        fun bind(houseModel: Content) {
             val titleTextView = view.findViewById<TextView>(R.id.titleTextView)
             val priceTextView = view.findViewById<TextView>(R.id.priceTextView)
             val thumbnailImageView = view.findViewById<ImageView>(R.id.thumbnailImageView)
 
             titleTextView.text = houseModel.name
-            priceTextView.text = houseModel.price
+            priceTextView.text = houseModel.price.toString()
 
             view.setOnClickListener {
                 itemClicked(houseModel)
@@ -79,12 +80,12 @@ class SportListAdapter(val itemClicked: (SportModel) -> Unit) :
 
 
     companion object {
-        val differ = object : DiffUtil.ItemCallback<SportModel>() {
-            override fun areItemsTheSame(oldItem: SportModel, newItem: SportModel): Boolean {
+        val differ = object : DiffUtil.ItemCallback<Content>() {
+            override fun areItemsTheSame(oldItem: Content, newItem: Content): Boolean {
                 return oldItem.name == newItem.name
             }
 
-            override fun areContentsTheSame(oldItem: SportModel, newItem: SportModel): Boolean {
+            override fun areContentsTheSame(oldItem: Content, newItem: Content): Boolean {
                 return oldItem == newItem
             }
         }

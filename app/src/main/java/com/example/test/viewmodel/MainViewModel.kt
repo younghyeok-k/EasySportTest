@@ -19,12 +19,12 @@ class MainViewModel : ViewModel() {
     val liveloginList: LiveData<Call<loginPost>>
         get() = _loginList
 
-    fun getLogin(user: User) = viewModelScope.launch {
-        val post1 = retrofitInstance.getLogin(user)
-
-//sharedper 값 넘겨줘야함
-        _loginList.value = post1
-    }
+//    fun getLogin(user: User) = viewModelScope.launch {
+//        val post1 = retrofitInstance.getLogin(user)
+//
+////sharedper 값 넘겨줘야함
+//        _loginList.value = post1
+//    }
 
 
     // 회원가입

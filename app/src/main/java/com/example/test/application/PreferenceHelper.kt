@@ -3,6 +3,8 @@ package com.example.test.application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import com.example.test.IntroActivity
+import com.example.test.api.RetrofitInstance
 import java.time.LocalDateTime
 
 object PreferenceHelper {

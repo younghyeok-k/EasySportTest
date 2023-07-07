@@ -2,44 +2,47 @@ package com.example.test.application
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.test.model.Data
 import com.example.test.model.User
-import com.example.test.model.loginPost
-import java.time.LocalDateTime
 import com.example.test.application.PreferenceHelper.set
 import com.example.test.application.PreferenceHelper.get
-class SharedManager(context: Context) {
 
-    private val prefs: SharedPreferences = PreferenceHelper.defaultPrefs(context)
 
-    fun saveCurrentUser(user: User) {
-//        prefs["id"] = user.id!!
-        prefs["username"] = user.username!!
-        prefs["password"] = user.password!!
-//        prefs["email"] = user.email!!
-//        prefs["role"] = user.role!!
-//        prefs["updateAt"] = user.updateAt!!
-//        prefs["createdAt"] = user.createdAt!!
+object SharedManager {
+    private lateinit var prefs: SharedPreferences
+    private lateinit var instance: SharedManager
+
+    fun init(context: Context) {
+        prefs = PreferenceHelper.defaultPrefs(context)
     }
 
+    fun getInstance(): SharedManager {
+        if (!::instance.isInitialized) {
+            instance = SharedManager
+        }
+        return instance
+    }
 
+    fun saveCurrentUser(user: User) {
+        prefs["username"] = user.username!!
+        prefs["password"] = user.password!!
+    }
 
     fun getCurrentUser(): User {
         return User().apply {
-//            id = prefs["id", 0]
             username = prefs["username", ""]
             password = prefs["password", ""]
-//            email = prefs["email", ""]
-//            role = prefs["role", ""]
-//            updateAt = prefs["updateAt",]
-//            createdAt = prefs["createdAt", ]
         }
     }
-    fun clear(){
-        prefs.edit().clear().commit()
+
+    fun saveBearerToken(token: String) {
+        prefs["bearerToken"] = token
     }
 
+    fun getBearerToken(): String {
+        return prefs["bearerToken", ""]
+    }
 
+    fun clear() {
+        prefs.edit().clear().apply()
+    }
 }
-
-
