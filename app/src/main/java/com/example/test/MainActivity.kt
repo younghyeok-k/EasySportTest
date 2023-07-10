@@ -19,14 +19,12 @@ import com.example.example.CenterResponse
 import com.example.example.Content
 import com.example.test.adapter.SportListAdapter
 import com.example.test.adapter.SportViewPagerAdapter
-import com.example.test.api.AllApi
-import com.example.test.api.Center
-import com.example.test.api.ReservationApi
-import com.example.test.api.RetrofitInstance
+import com.example.test.api.*
 import com.example.test.application.SharedManager
 import com.example.test.dialog.CustomDialog
 
 import com.example.test.model.*
+import com.example.test.model.Reservation.MyReservations
 import com.example.test.model.Reservation.RequsetReservation
 import com.example.test.model.Reservation.ResponseReservation
 import com.google.android.material.navigation.NavigationView
@@ -210,9 +208,35 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
                 add("10:00")
             }
             reservation.headCount="4"
-            getReservationAPI("6",reservation)
+            getReservationAPI("6",reservation)   // 센터 예약하기
+            getMyReservationAPI()   //나의 예약내역
+            getReservationCancelAPI("1","1")//센터 예약취소
         }
 
+
+    }
+    private fun getReservationCancelAPI(centerid:String,reservationId:String) {
+
+        RetrofitInstance.retrofit.create(ReservationcancelApi::class.java)
+            .getReservationcancel(centerid,reservationId)
+            .enqueue(object : Callback<String> {
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        Log.d("getReservationCancelAPI", "success");
+                        response.body()?.let { dto ->
+
+                            Log.d("getReservationCancelAPI", dto.toString())
+
+                        }
+
+                    }
+                }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    TODO("Not yet implemented")
+                }
+            })
     }
 
     private fun getReservationAPI(centerid:String,user: RequsetReservation) {
@@ -237,6 +261,35 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, Overlay.OnClickLis
                 }
 
                 override fun onFailure(call: Call<ResponseReservation>, t: Throwable) {
+                    TODO("Not yet implemented")
+                }
+            })
+    }
+
+    private fun getMyReservationAPI() {
+
+        RetrofitInstance.retrofit.create(MyReservationApi::class.java)
+            .getMyReservation()
+            .enqueue(object : Callback<MyReservations> {
+                override fun onResponse(
+                    call: Call<MyReservations>,
+                    response: Response<MyReservations>
+                ) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        Log.d("getMyReservationAPI", "success");
+                        response.body()?.let { dto ->
+
+                            Log.d("getMyReservationAPI", dto.content[1].name.toString())
+
+                            //리사클러뷰에 정보담아서 각자위치로 넣어주기
+
+                        }
+
+                    }
+                }
+
+                override fun onFailure(call: Call<MyReservations>, t: Throwable) {
                     TODO("Not yet implemented")
                 }
             })
